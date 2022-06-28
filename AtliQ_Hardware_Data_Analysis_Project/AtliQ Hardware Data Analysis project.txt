@@ -1,0 +1,62 @@
+A. Problem statement-
+      AtliQ Hardware is a electrical acceceries product making company. 
+      Its sales are decreasing past few months. 
+B. Purpose of project-
+       1. To unlock sales insights that are not visible before for 
+          sales team for decision support & automate them to reduced
+          manual time spent in data gathering
+       2. Design an automated dashboard providing quick & latest 
+          sales insights in order to support data driven 
+          decision making
+C. Success criteria-
+       1. Dashboards uncovering sales order insights with latest 
+           data available
+       2. Sales team able to take better decision & and 
+          prove 10% cost saving of total spend
+       3. Sales Analysts stop data gathering manually in order
+          to save 20% of their business time and reinvest 
+          it value added activity 
+
+Data Analysis Using SQL
+    Use database for Analysis
+    use sales;
+    Show all the tables peresnt in database 
+    show tables;
+    Show all customer records
+
+    SELECT * FROM customers;
+
+    Show total number of customers
+
+    SELECT count(*) FROM customers;
+
+    Show transactions for Lucknow market (market code for lucknow is Mark008
+
+    SELECT * FROM transactions where market_code='Mark008';
+
+    Show distrinct product codes that were sold in lucknow
+
+    SELECT distinct product_code FROM transactions where market_code='Mark008';
+
+    Show transactions where currency is US dollars
+
+    SELECT * from transactions where currency="USD"
+
+    Show transactions in 2020 join by date table
+
+    SELECT transactions.*, date.* FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020;
+
+    Show total revenue in year 2020,
+
+    SELECT SUM(transactions.sales_amount) FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020 and transactions.currency="INR\r" or transactions.currency="USD\r";
+
+    Show total revenue in year 2020, January Month,
+
+    SELECT SUM(transactions.sales_amount) FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020 and and date.month_name="January" and (transactions.currency="INR\r" or transactions.currency="USD\r");
+
+    Show total revenue in year 2020 in Lucknow
+
+    SELECT SUM(transactions.sales_amount) FROM transactions INNER JOIN date ON transactions.order_date=date.date where date.year=2020 and transactions.market_code="Mark008";
+   
+Data Analysis In Tableau-
+Link-https:https://public.tableau.com/app/profile/shubham.verma6935
