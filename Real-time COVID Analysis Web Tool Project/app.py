@@ -10,7 +10,7 @@ from dash import dcc
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import pandas as pd
-
+import flask
 
 # In[3]:
 
@@ -171,7 +171,8 @@ list_locations = covid_data_dict.set_index('Name')[['Latitude', 'Longitude']].T.
 
 
 # web app
-app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}])
+server = flask.Flask(__name__)
+app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}],server=server)
 
 app.layout = html.Div([
     html.Div([
@@ -368,7 +369,7 @@ html.Div([
                         'color': 'darkgreen',"font-weight": "bold"}
                     ),
         dcc.Graph(id='vacpeople', config={'displayModeBar': False}, className='dcc_compon',
-                     style={'margin-top': '-10px','margin-left': '-20px','margin-right': '-20px'},
+                     style={'margin-top': '10px','margin-left': '-20px','margin-right': '-20px'},
                      )
 ], className="card_container three columns",
         ),
@@ -379,7 +380,7 @@ html.Div([
                         'color': 'darkgreen',"font-weight": "bold"}
                     ),
         dcc.Graph(id='fullvac', config={'displayModeBar': False}, className='dcc_compon',
-                     style={'margin-top': '-10px','margin-left': '-20px','margin-right': '-20px'},
+                     style={'margin-top': '10px','margin-left': '-20px','margin-right': '-20px'},
                      )
 ], className="card_container three columns",
         ),
@@ -390,7 +391,7 @@ html.Div([
                         'color': 'darkgreen',"font-weight": "bold"}
                     ),
         dcc.Graph(id='totalboost', config={'displayModeBar': False}, className='dcc_compon',
-                     style={'margin-top': '-10px','margin-left': '-20px','margin-right': '-20px'},
+                     style={'margin-top': '10px','margin-left': '-20px','margin-right': '-20px'},
                      )
 ], className="card_container three columns",
         ),
@@ -444,74 +445,61 @@ def update_confirmed(w_countries):
     percent_vacpeople=round((df_vaccination[df_vaccination['Name'] == w_countries]['people_vaccinated'].iloc[-1]/df[df['Name'] == w_countries]['Population'].iloc[0])*100,2)
     return {
             'data': [go.Indicator(
-                    mode='number',
-                    value=value_vacpeople,
-                    
-                    number={'valueformat': ',',
-                            'font': {'size': 25},
-
-                               },
-                    domain={'y': [0,1], 'x': [0,.4]}),
-                    
-                     go.Indicator(
-                    mode='number',
-                    value=percent_vacpeople,
-                    
-                    number={'valueformat': '.','prefix': "        (",'suffix':"%)",
-                            'font': {'size': 15,'color':'#b300b3'},
-
-                               },
-                    domain={'y': [0, 1], 'x': [0.9999,1]})],
+                     mode='number',
+                     value=value_vacpeople,
+                     align = "center",
+                     number={'valueformat': ',',
+                             'font': {'size': 25}
+                                },
+                     domain={'y': [0,1], 'x': [0,1]})
+                     ],
     'layout': go.Layout(
-                title={
-                       'y': 1,
-                       'x': 0.5,
+                title={'text':str(percent_vacpeople)+'%',
+                        'font':{'size':20,'color':'#b300b3'},
+                        'y': 0.98,
+                        'x': 0.5,
                        'xanchor': 'center',
                        'yanchor': 'top'},
                 font=dict(color='#0723ee'),
-                paper_bgcolor='#DCDCDC',
+                margin=dict(b=30),
+                paper_bgcolor='#dcdcdc',
                 plot_bgcolor='#1f2c56',
-                height=70
-                )}
+                height=50
+                )
+                }
 
 
 @app.callback(
     Output('fullvac','figure'),
     [Input('w_countries', 'value')])
 def update_confirmed(w_countries):
-    value_vac = df_vaccination[df_vaccination['Name'] == w_countries]['people_fully_vaccinated'].iloc[-1]
-    percent_vac=round((df_vaccination[df_vaccination['Name'] == w_countries]['people_fully_vaccinated'].iloc[-1]/df[df['Name'] == w_countries]['Population'].iloc[0])*100,2)
+    value_vac1 = df_vaccination[df_vaccination['Name'] == w_countries]['people_fully_vaccinated'].iloc[-1]
+    percent_vac1=round((df_vaccination[df_vaccination['Name'] == w_countries]['people_fully_vaccinated'].iloc[-1]/df[df['Name'] == w_countries]['Population'].iloc[0])*100,2)
     return {
             'data': [go.Indicator(
-                    mode='number',
-                    value=value_vac,
-                    
-                    number={'valueformat': ',',
-                            'font': {'size': 25},
-
-                               },
-                    domain={'y': [0,1], 'x': [0,.4]}),
-                    
-                     go.Indicator(
-                    mode='number',
-                    value=percent_vac,
-                    
-                    number={'valueformat': '.','prefix': "        (",'suffix':"%)",
-                            'font': {'size': 15,'color':'#b300b3'},
-
-                               },
-                    domain={'y': [0, 1], 'x': [0.9999,1]})],
+                     mode='number',
+                     value=value_vac1,
+                     align = "center",
+                     number={'valueformat': ',',
+                             'font': {'size': 25}
+                                },
+                     domain={'y': [0,1], 'x': [0,1]})
+                     ],
     'layout': go.Layout(
-                title={
-                       'y': 1,
-                       'x': 0.5,
+                title={'text':str(percent_vac1)+'%',
+                        'font':{'size':20,'color':'#b300b3'},
+                        'y': 0.98,
+                        'x': 0.5,
                        'xanchor': 'center',
                        'yanchor': 'top'},
                 font=dict(color='#0723ee'),
-                paper_bgcolor='#DCDCDC',
+                margin=dict(b=30),
+                paper_bgcolor='#dcdcdc',
                 plot_bgcolor='#1f2c56',
-                height=70
-                )}
+                height=50
+                )
+                }
+
 
 @app.callback(
     Output('totalboost','figure'),
@@ -521,35 +509,29 @@ def update_confirmed(w_countries):
     percent_boost=round((df_vaccination[df_vaccination['Name'] == w_countries]['total_boosters'].iloc[-1]/df[df['Name'] == w_countries]['Population'].iloc[0])*100,2)
     return {
             'data': [go.Indicator(
-                    mode='number',
-                    value=boost_vac,
-                    
-                    
-                    number={'valueformat': ',',
-                            'font': {'size': 25},
-
-                               },
-                    domain={'y': [0, 1], 'x': [0, .4]}),
-                    go.Indicator(
-                    mode='number',
-                    value=percent_boost,
-                    
-                    number={'valueformat': '.','prefix': "        (",'suffix':"%)",
-                            'font': {'size': 15,'color':'#b300b3'},
-
-                               },
-                    domain={'y': [0, 1], 'x': [.9999, 1]})],
+                     mode='number',
+                     value=boost_vac,
+                     align = "center",
+                     number={'valueformat': ',',
+                             'font': {'size': 25}
+                                },
+                     domain={'y': [0,1], 'x': [0,1]})
+                     ],
     'layout': go.Layout(
-                title={
-                       'y': 1,
-                       'x': 0.5,
+                title={'text':str(percent_boost)+'%',
+                        'font':{'size':20,'color':'#b300b3'},
+                        'y': 0.98,
+                        'x': 0.5,
                        'xanchor': 'center',
                        'yanchor': 'top'},
                 font=dict(color='#0723ee'),
-                paper_bgcolor='#DCDCDC',
+                margin=dict(b=30),
+                paper_bgcolor='#dcdcdc',
                 plot_bgcolor='#1f2c56',
-                height=70
-                )}
+                height=50
+                )
+                }
+
 
 @app.callback(
     Output('confirmed', 'figure'),
@@ -918,7 +900,3 @@ if __name__ == '__main__':
 
 
 # In[ ]:
-
-
-
-
